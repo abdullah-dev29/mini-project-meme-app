@@ -13,6 +13,7 @@ memeModalCloseBtn.addEventListener('click', closeModal)
 
 getImageBtn.addEventListener('click', renderCat)
 
+
 function highlightCheckedOption(e){
     const radios = document.getElementsByClassName('radio')
     for (let radio of radios){
@@ -25,21 +26,34 @@ function closeModal(){
     memeModal.style.display = 'none'
 }
 
+// Stretch goal 1
+function closeModalByClickingOutside(e) {
+    if(!memeModal.contains(e.target)) {
+        closeModal()
+        document.removeEventListener('click', closeModalByClickingOutside)
+    }
+}
+
 function renderCat(){
     const catObject = getSingleCatObject()
     memeModalInner.innerHTML =  `
-        <img 
-        class="cat-img" 
+        <img
+        class="cat-img"
         src="./images/${catObject.image}"
         alt="${catObject.alt}"
         >
         `
     memeModal.style.display = 'flex'
+
+    // Stretch goal 1: click outside the modal to close the modal
+    setTimeout(function(){
+        document.addEventListener('click', closeModalByClickingOutside)
+    },200)
 }
 
 function getSingleCatObject(){
     const catsArray = getMatchingCatsArray()
-    
+
     if(catsArray.length === 1){
         return catsArray[0]
     }
@@ -49,26 +63,26 @@ function getSingleCatObject(){
     }
 }
 
-function getMatchingCatsArray(){     
+function getMatchingCatsArray(){
     if(document.querySelector('input[type="radio"]:checked')){
         const selectedEmotion = document.querySelector('input[type="radio"]:checked').value
         const isGif = gifsOnlyOption.checked
-        
+
         const matchingCatsArray = catsData.filter(function(cat){
-            
+
             if(isGif){
                 return cat.emotionTags.includes(selectedEmotion) && cat.isGif
             }
             else{
                 return cat.emotionTags.includes(selectedEmotion)
-            }            
+            }
         })
-        return matchingCatsArray 
-    }  
+        return matchingCatsArray
+    }
 }
 
 function getEmotionsArray(cats){
-    const emotionsArray = []    
+    const emotionsArray = []
     for (let cat of cats){
         for (let emotion of cat.emotionTags){
             if (!emotionsArray.includes(emotion)){
@@ -80,7 +94,7 @@ function getEmotionsArray(cats){
 }
 
 function renderEmotionsRadios(cats){
-        
+
     let radioItems = ``
     const emotions = getEmotionsArray(cats)
     for (let emotion of emotions){
@@ -99,7 +113,3 @@ function renderEmotionsRadios(cats){
 }
 
 renderEmotionsRadios(catsData)
-
-
-
-
